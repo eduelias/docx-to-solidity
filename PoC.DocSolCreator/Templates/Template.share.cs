@@ -22,9 +22,8 @@ namespace PoC.DocSolCreator.Templates
 
     public interface ISCExpression
     {
-        bool ShouldCheck { get; set; }
         string Name { get; set; }
-        string GetWordsForTheDocument();
+        bool ShouldCheck { get; set; }  
         IEnumerable<SCTControlBase> GetControls();
     }
 
@@ -33,7 +32,10 @@ namespace PoC.DocSolCreator.Templates
         bool ShouldCheck { get; }
         string Name { get; }
         string GetContractGlobalFields<T>(T Data);
-        string GetSmartContractString<T>(T Data);        
+        string GetParticularFunctions<T>(T Data);
+
+        string GetValorFunctionBody();
+
         IEnumerable<ISCExpression> GetExpressionList();        
     }
 
@@ -41,35 +43,9 @@ namespace PoC.DocSolCreator.Templates
     {
         //private string regex_address = @"([13][a-km-zA-HJ-NP-Z1-9]{25,34}$)";
         //private string regex_sharepc = @"(\d+|\d+[.]\d+)%?";
-        private string word_wording = @"Address {0} with {1} shares; ";
-        private string word_address = @"[Address here]";
-        private string word_percent = @"[Shares percent]";
-
         public string Name { get; set; }
 
-        public bool ShouldCheck { get; set; }        
-
-        public string GetWordsForTheDocument()
-        {
-            return string.Format(word_wording, word_address, word_percent);
-        }
-
-        public IEnumerable<Tuple<string, Tuple<int, int>>> BookMarkMaker(int arg)
-        {
-            var lret = new List<Tuple<string, Tuple<int, int>>>();
-            var words = GetWordsForTheDocument();
-            var addressIndexOf = words.IndexOf(word_address);
-            var addressLength = word_address.Length;
-            var percentIndexOf = words.IndexOf(word_percent);
-            var percentLength = word_percent.Length;
-
-            lret.Add(new Tuple<string, Tuple<int, int>>(string.Format("_addshare{0}_1a{{0}}", arg), new Tuple<int, int>(arg, arg + addressIndexOf)));
-            lret.Add(new Tuple<string, Tuple<int, int>>(string.Format("_addshare{0}_2w{{0}}", arg), new Tuple<int, int>(arg + addressIndexOf + addressLength + 2, arg + percentIndexOf + 2)));
-            lret.Add(new Tuple<string, Tuple<int, int>>(string.Format("_addshare{0}_3s{{0}}", arg), new Tuple<int, int>(arg + percentIndexOf + percentLength + 4, arg + words.Length)));
-
-            return lret;
-
-        }
+        public bool ShouldCheck { get; set; }                
 
         public IEnumerable<SCTControlBase> GetControls()
         {
@@ -113,7 +89,7 @@ namespace PoC.DocSolCreator.Templates
 
 
 
-        public string GetSmartContractString<T>(T Data)
+        public string GetParticularFunctions<T>(T Data)
         {
             if (!typeof(T).IsAssignableFrom(typeof(SharesPerAddressData)))
                 throw new Exception(typeof(SharesPerAddressData).Name);
@@ -146,6 +122,11 @@ namespace PoC.DocSolCreator.Templates
                     Name = "Address/share"                                        
                 }
             };
+        }
+
+        public string GetValorFunctionBody()
+        {
+            return string.Empty;
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using PoC.DocSolCreator.Templates;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Windows.Forms;
+using DocSolTemplateer.Infrastructure.Interfaces;
+
 
 namespace PoC.DocSolCreator
 {

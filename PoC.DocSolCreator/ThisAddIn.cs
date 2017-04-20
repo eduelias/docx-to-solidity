@@ -1,9 +1,10 @@
-﻿using PoC.DocSolCreator.Templates;
-using System;
-using System.Linq;
+﻿using DocSolTemplateer.Infrastructure.Enums;
+using DocSolTemplateer.Infrastructure.Interfaces;
 using Microsoft.Office.Interop.Word;
-using System.Linq.Expressions;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace PoC.DocSolCreator
 {
@@ -59,13 +60,13 @@ namespace PoC.DocSolCreator
 
             expression.ShouldCheck = true;
 
-            foreach (var ctrl in expression.GetControls().OrderByDescending(o => o.Order))
+            foreach (var ctrl in expression.TemplateControls.OrderByDescending(o => o.Order))
             {
                 switch (ctrl.Kind) {
                     case SCTControlKindEnum.Integer:
                     case SCTControlKindEnum.String:
                         {
-                            var tctrl = this.ActiveDocument.ContentControls.Add(WdContentControlType.wdContentControlRichText);
+                            var tctrl = ActiveDocument.Controls.AddRichTextContentControl(ctrl.InternalName + "_" + Guid.NewGuid().ToString());
                             tctrl.SetPlaceholderText(null, null, ctrl.DisplayText);
                             tctrl.LockContentControl = true;
                         }
@@ -78,13 +79,18 @@ namespace PoC.DocSolCreator
 
         private void GenerateContract()
         {
-            foreach(var template in myOptionsControl
-                .ComboboxTemplates
-                .Items
-                .Cast<ISContractTemplate>()
-                .Where(ct => ct.ShouldCheck))
-            {
+            //foreach(var template in myOptionsControl
+            //    .ComboboxTemplates
+            //    .Items
+            //    .Cast<ISContractTemplate>()
+            //    .Where(ct => ct.ShouldCheck))
+            //{
 
+            //}
+
+            foreach (var control in ActiveDocument.Controls)
+            {
+                var al = control;
             }
         }
 
@@ -161,4 +167,45 @@ namespace PoC.DocSolCreator
         
         #endregion
     }
+
+    //public static class WordExtensionMethods
+    //{
+    //    public static List<ContentControl> GetAllContentControls(this Microsoft.Office.Tools.Word.Document wordDocument)
+    //    {
+    //        if (null == wordDocument)
+    //            throw new ArgumentNullException("wordDocument");
+
+    //        List<Microsoft.Office.Tools.Word.ContentControl> ccList = new List<Microsoft.Office.Tools.Word.ContentControl>();
+
+    //        // The code below search content controls in all
+    //        // word document stories see http://word.mvps.org/faqs/customization/ReplaceAnywhere.htm
+    //        Range rangeStory;
+    //        foreach (Range range in wordDocument.StoryRanges)
+    //        {
+    //            rangeStory = range;
+    //            do
+    //            {
+    //                try
+    //                {
+    //                    foreach (ContentControl cc in rangeStory.ContentControls)
+    //                    {
+    //                        ccList.Add(cc);
+    //                    }
+    //                    foreach (Shape shapeRange in rangeStory.ShapeRange)
+    //                    {
+    //                        foreach (ContentControl cc in shapeRange.TextFrame.TextRange.ContentControls)
+    //                        {
+    //                            ccList.Add(cc);
+    //                        }
+    //                    }
+    //                }
+    //                catch (COMException) { }
+    //                rangeStory = rangeStory.NextStoryRange;
+
+    //            }
+    //            while (rangeStory != null);
+    //        }
+    //        return ccList;
+    //    }
+    //}
 }

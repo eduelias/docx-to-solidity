@@ -3,8 +3,7 @@
 namespace DocSolTemplateer.Infrastructure.Interfaces
 {
     public interface ISContractTemplate
-    {
-        bool ShouldCheck { get; }
+    { 
         string Name { get; }
 
         string GetContractGlobalFields();
@@ -12,7 +11,7 @@ namespace DocSolTemplateer.Infrastructure.Interfaces
 
         //string GetValorFunctionBody();
 
-        IEnumerable<ISCExpression> DefaultExpressions { get; }
+        IEnumerable<ISCExpression> GetDefaultExpression();
         IEnumerable<ISCExpression> UsedExpressions { get; }
 
         IEnumerable<string> GetConstructorData();

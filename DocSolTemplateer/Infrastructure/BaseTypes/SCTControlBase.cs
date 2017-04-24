@@ -16,6 +16,7 @@ namespace DocSolTemplateer.Infrastructure.BaseTypes
 
         public SCTControlKindEnum Kind { get; set; }
         public int Width { get; set; }
+        public Guid Grouping { get; internal set; }
 
         public IEnumerable<string> GetObjectIds()
         {

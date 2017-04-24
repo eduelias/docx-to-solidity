@@ -61,55 +61,23 @@ namespace PoC.DocSolCreator
             Selection currentSelection = Application.Selection;
             var currentRange = currentSelection.Range;
 
-            expression.ShouldCheck = true;
-            var thisGuid = Guid.NewGuid();
+            expression.SetAsUsed();
+
+            expression.GroupIdentification = Guid.NewGuid();  
 
             foreach (var ctrl in expression.TemplateControls.OrderByDescending(o => o.Order))
             {                
                 switch (ctrl.Kind) {
                     case SCTControlKindEnum.Integer:
                     case SCTControlKindEnum.String:
-                        {
-                            //var tctrl = ActiveDocument.Controls.AddRichTextContentControl(ctrl.InternalName);
-                            //tctrl.SetPlaceholderText(null, null, ctrl.DisplayText);
-                            //tctrl.LockContentControl = true;
-                            //ctrl.AddObjectId(tctrl.ID);                            
-                            //if (currentSelection.Type == Microsoft.Office.Interop.Word.WdSelectionType.wdSelectionIP)
-                            //{                                
-                            //    var tctrl = ActiveDocument.Controls.AddPlainTextContentControl(ActiveDocument.Range(currentSelection.Range.Start, currentSelection.Range.Start + ctrl.Width), ctrl.InternalName);
-                            //    tctrl.SetPlaceholderText(null, null, ctrl.DisplayText);
-                            //    tctrl.LockContentControl = true;
-                            //    ctrl.AddObjectId(tctrl.ID);
-                            //    currentSelection.SetRange(currentSelection.Start + ctrl.Width, currentSelection.Start + ctrl.Width);
-                            //}
-                            //else
-                            //{
-                            //    if (currentSelection.Type == Microsoft.Office.Interop.Word.WdSelectionType.wdSelectionNormal)
-                            //    {
-                            //        // Move to start of selection.
-                            //        if (Application.Options.ReplaceSelection)
-                            //        {
-                            //            object direction = Microsoft.Office.Interop.Word.WdCollapseDirection.wdCollapseStart;
-                            //            currentSelection.Collapse(ref direction);
-                            //        }
-                            //        var tctrl = ActiveDocument.Controls.AddRichTextContentControl(currentSelection.Range, ctrl.InternalName);
-                            //        tctrl.SetPlaceholderText(null, null, ctrl.DisplayText);
-                            //        tctrl.LockContentControl = true;
-                            //        ctrl.AddObjectId(tctrl.ID);                                    
-                            //        currentSelection.TypeParagraph();
-                            //    }
-                            //    else
-                            //    {
-                            //        // Do nothing.
-                            //    }
-                            //}                          
+                        {                                                    
                             ActiveDocument.Paragraphs[ActiveDocument.Paragraphs.Count].Range.InsertParagraphAfter();
 
                             var textControl2 = ActiveDocument.Controls.AddPlainTextContentControl(
                                 ActiveDocument.Paragraphs[ActiveDocument.Paragraphs.Count].Range,
-                                ctrl.InternalName + "_" + thisGuid);
+                                ctrl.InternalName + "_" + expression.GroupIdentification);
                             textControl2.PlaceholderText = ctrl.DisplayText;
-                            ctrl.AddObjectId(thisGuid.ToString(), textControl2.ID);
+                            ctrl.AddObjectId(expression.GroupIdentification.ToString(), textControl2.ID);
 
                             ActiveDocument.Paragraphs[ActiveDocument.Paragraphs.Count].Range.InsertParagraphAfter();
                         }
@@ -133,7 +101,7 @@ namespace PoC.DocSolCreator
                         {
                             foreach (var wordComp in ActiveDocument.Controls.Cast<Microsoft.Office.Tools.Word.ContentControlBase>().Where(i => i.ID == control))
                             {
-                                sccontrol.SetValue(expression, wordComp.GetType().GetProperties().Where(p => p.Name == "Text").First().GetValue(wordComp));
+                                sccontrol.SetValue(expression.GroupIdentification.ToString(), wordComp.GetType().GetProperties().Where(p => p.Name == "Text").First().GetValue(wordComp));
                             }
                         }
                     }

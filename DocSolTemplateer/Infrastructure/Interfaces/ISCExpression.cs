@@ -6,10 +6,10 @@ namespace DocSolTemplateer.Infrastructure.Interfaces
 {
     public interface ISCExpression
     {
-        //Guid GroupIdentification { get; set; }
+        Guid GroupIdentification { get; set; }
 
         string Name { get; set; }
-        bool ShouldCheck { get; set; }
+        
         IEnumerable<SCTControlBase> TemplateControls { get; set; }
 
         IEnumerable<string> GetAtrributionExpression();

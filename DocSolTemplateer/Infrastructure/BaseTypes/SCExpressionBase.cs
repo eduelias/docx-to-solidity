@@ -7,10 +7,8 @@ namespace DocSolTemplateer.Infrastructure.BaseTypes
 {
     public class SCExpressionBase : ISCExpression
     {           
-        //public Guid GroupIdentification { get; set; }
-
-        public string Name { get; set; }
-        public bool ShouldCheck { get; set; }
+        public Guid GroupIdentification { get; set; }
+        public string Name { get; set; }        
         public IEnumerable<SCTControlBase> TemplateControls { get; set; }
 
         public IEnumerable<string> GetAtrributionExpression()
@@ -39,9 +37,9 @@ namespace DocSolTemplateer.Infrastructure.BaseTypes
             //return str;
         }
 
-        public Guid GetGuid()
+        public void SetAsUsed()
         {
-            return Id;
+            this.Used
         }
     }
 }

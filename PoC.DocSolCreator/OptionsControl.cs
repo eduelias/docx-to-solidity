@@ -21,7 +21,7 @@ namespace PoC.DocSolCreator
         {
             int selectedIndex = ComboboxTemplates.SelectedIndex;
             ISContractTemplate selectedItem = ComboboxTemplates.SelectedItem as ISContractTemplate;
-            var expressions = selectedItem.DefaultExpressions;
+            var expressions = selectedItem.GetDefaultControls;
 
             foreach (var xp in expressions)
             {

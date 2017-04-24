@@ -10,7 +10,7 @@ namespace PoC.DocSolCreator
         public Microsoft.Office.Tools.Word.Document ActiveDocument;        
 
         public Action<ISCExpression> InsertControls;
-        public Action<IEnumerable<ISCExpression>> MakeContract;
+        public Action<IEnumerable<ISContractTemplate>> MakeContract;
 
         public OptionsControl()
         {
@@ -21,7 +21,7 @@ namespace PoC.DocSolCreator
         {
             int selectedIndex = ComboboxTemplates.SelectedIndex;
             ISContractTemplate selectedItem = ComboboxTemplates.SelectedItem as ISContractTemplate;
-            var expressions = selectedItem.GetExpressionList();
+            var expressions = selectedItem.DefaultExpressions;
 
             foreach (var xp in expressions)
             {
@@ -40,8 +40,13 @@ namespace PoC.DocSolCreator
             };
 
             bt2.Click += (s, ev) =>
-            {                
-                MakeContract(expressions);
+            {
+                var lst = new List<ISContractTemplate>();         
+                foreach (var i in ComboboxTemplates.Items)
+                {
+                    lst.Add(i as ISContractTemplate);
+                }
+                MakeContract(lst);
             };
 
             UpperPanel.Controls.Add(bt2);

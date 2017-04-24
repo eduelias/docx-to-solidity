@@ -7,11 +7,15 @@ namespace DocSolTemplateer.Infrastructure.Interfaces
         bool ShouldCheck { get; }
         string Name { get; }
 
-        //string GetContractGlobalFields<T>(T Data);
+        string GetContractGlobalFields();
         //string GetParticularFunctions<T>(T Data);
 
         //string GetValorFunctionBody();
 
-        IEnumerable<ISCExpression> GetExpressionList();                
+        IEnumerable<ISCExpression> DefaultExpressions { get; }
+        IEnumerable<ISCExpression> UsedExpressions { get; }
+
+        IEnumerable<string> GetConstructorData();
+        IEnumerable<string> GetContractUnamedFunctionBody();
     }
 }

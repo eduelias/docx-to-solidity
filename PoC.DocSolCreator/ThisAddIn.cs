@@ -1,4 +1,5 @@
-﻿using DocSolTemplateer.Infrastructure.BaseTypes;
+﻿using DocSolGenerator;
+using DocSolTemplateer.Infrastructure.BaseTypes;
 using DocSolTemplateer.Infrastructure.Enums;
 using DocSolTemplateer.Infrastructure.Interfaces;
 using Microsoft.Office.Interop.Word;
@@ -61,43 +62,85 @@ namespace PoC.DocSolCreator
             var currentRange = currentSelection.Range;
 
             expression.ShouldCheck = true;
+            var thisGuid = Guid.NewGuid();
 
             foreach (var ctrl in expression.TemplateControls.OrderByDescending(o => o.Order))
-            {
+            {                
                 switch (ctrl.Kind) {
                     case SCTControlKindEnum.Integer:
                     case SCTControlKindEnum.String:
                         {
-                            var tctrl = ActiveDocument.Controls.AddRichTextContentControl(ctrl.InternalName);
-                            tctrl.SetPlaceholderText(null, null, ctrl.DisplayText);
-                            tctrl.LockContentControl = true;
-                            ctrl.AddObjectId(tctrl.ID);                                                    
+                            //var tctrl = ActiveDocument.Controls.AddRichTextContentControl(ctrl.InternalName);
+                            //tctrl.SetPlaceholderText(null, null, ctrl.DisplayText);
+                            //tctrl.LockContentControl = true;
+                            //ctrl.AddObjectId(tctrl.ID);                            
+                            //if (currentSelection.Type == Microsoft.Office.Interop.Word.WdSelectionType.wdSelectionIP)
+                            //{                                
+                            //    var tctrl = ActiveDocument.Controls.AddPlainTextContentControl(ActiveDocument.Range(currentSelection.Range.Start, currentSelection.Range.Start + ctrl.Width), ctrl.InternalName);
+                            //    tctrl.SetPlaceholderText(null, null, ctrl.DisplayText);
+                            //    tctrl.LockContentControl = true;
+                            //    ctrl.AddObjectId(tctrl.ID);
+                            //    currentSelection.SetRange(currentSelection.Start + ctrl.Width, currentSelection.Start + ctrl.Width);
+                            //}
+                            //else
+                            //{
+                            //    if (currentSelection.Type == Microsoft.Office.Interop.Word.WdSelectionType.wdSelectionNormal)
+                            //    {
+                            //        // Move to start of selection.
+                            //        if (Application.Options.ReplaceSelection)
+                            //        {
+                            //            object direction = Microsoft.Office.Interop.Word.WdCollapseDirection.wdCollapseStart;
+                            //            currentSelection.Collapse(ref direction);
+                            //        }
+                            //        var tctrl = ActiveDocument.Controls.AddRichTextContentControl(currentSelection.Range, ctrl.InternalName);
+                            //        tctrl.SetPlaceholderText(null, null, ctrl.DisplayText);
+                            //        tctrl.LockContentControl = true;
+                            //        ctrl.AddObjectId(tctrl.ID);                                    
+                            //        currentSelection.TypeParagraph();
+                            //    }
+                            //    else
+                            //    {
+                            //        // Do nothing.
+                            //    }
+                            //}                          
+                            ActiveDocument.Paragraphs[ActiveDocument.Paragraphs.Count].Range.InsertParagraphAfter();
+
+                            var textControl2 = ActiveDocument.Controls.AddPlainTextContentControl(
+                                ActiveDocument.Paragraphs[ActiveDocument.Paragraphs.Count].Range,
+                                ctrl.InternalName + "_" + thisGuid);
+                            textControl2.PlaceholderText = ctrl.DisplayText;
+                            ctrl.AddObjectId(thisGuid.ToString(), textControl2.ID);
+
+                            ActiveDocument.Paragraphs[ActiveDocument.Paragraphs.Count].Range.InsertParagraphAfter();
                         }
                         break;
                     default:
-                        return;
-                }
+                        return;                        
+                }                
             }
         }
 
-        private void GenerateContract(IEnumerable<ISCExpression> expressions)
+        private void GenerateContract(IEnumerable<ISContractTemplate> templates)
         {
-            
-            object instance = null;
-            foreach (var expression in expressions)
-            {                
-                foreach (var sccontrol in expression.TemplateControls)
+            myOptionsControl.ContractEditBox.Text = string.Empty;
+            foreach (var template in templates)
+            {
+                foreach (var expression in template.UsedExpressions)
                 {
-                    instance = (instance == null) ? Activator.CreateInstance(sccontrol.DataType) : instance;
-                    foreach (var control in sccontrol.GetObjectIds()) {                        
-                        foreach (var wordComp in ActiveDocument.Controls.Cast<Microsoft.Office.Tools.Word.ContentControlBase>().Where(i => i.ID == control))
+                    foreach (var sccontrol in expression.TemplateControls)
+                    {
+                        foreach (var control in sccontrol.GetObjectIds())
                         {
-                            sccontrol.SetValue(instance, wordComp.GetType().GetProperties().Where(p => p.Name == "Text").First().GetValue(wordComp));
+                            foreach (var wordComp in ActiveDocument.Controls.Cast<Microsoft.Office.Tools.Word.ContentControlBase>().Where(i => i.ID == control))
+                            {
+                                sccontrol.SetValue(expression, wordComp.GetType().GetProperties().Where(p => p.Name == "Text").First().GetValue(wordComp));
+                            }
                         }
                     }
                 }
-                instance = null;
             }
+
+            myOptionsControl.ContractEditBox.Text = Generator.GenerateContract("alpha", templates, "");
         }
 
         [Obsolete("Should use InsertControls")]

@@ -194,6 +194,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DocSolGenerator\DocSolGenerator.csproj">
+      <Project>{A22B2D4E-3B6D-467E-ABC1-67EAFB46DA7F}</Project>
+      <Name>DocSolGenerator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DocSolTemplateer\DocSolTemplateer.csproj">
       <Project>{1622ee50-1454-4626-85df-6513a7699d06}</Project>
       <Name>DocSolTemplateer</Name>

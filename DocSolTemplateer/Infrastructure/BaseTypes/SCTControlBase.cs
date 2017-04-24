@@ -1,64 +1,42 @@
 ﻿using DocSolTemplateer.Infrastructure.Enums;
-using DocSolTemplateer.Infrastructure.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Reflection;
+using System.Linq;
 
 namespace DocSolTemplateer.Infrastructure.BaseTypes
 {
     public class SCTControlBase
-    {
-        public Type DataType { get; set; }
-        public PropertyInfo Property { get; set; }
-
-        private List<string> ControlIds = new List<string>();
+    { 
+        private Dictionary<string, string> ControlIds = new Dictionary<string, string>();
+        public Dictionary<string, object> ControlValues =  new Dictionary<string, object>();
         
         public int Order { get; set; }        
         public string DisplayText { get; set; }
         public string InternalName { get; set; }        
 
         public SCTControlKindEnum Kind { get; set; }
-
-        public Dictionary<string, object> MetaInformation = new Dictionary<string, object>(StringComparer.CurrentCultureIgnoreCase);
+        public int Width { get; set; }
 
         public IEnumerable<string> GetObjectIds()
         {
-            return ControlIds;
+            return ControlIds.Select(x => x.Value);
         }
 
-        public void AddObjectId(string Id)
+        public void AddObjectId(string guid, string Id)
         {
-            ControlIds.Add(Id);
+            ControlIds.Add(guid, Id);
         }
 
-        public void SetValue<TData>(TData model, object theValue)
+        public void SetValue(string key, object theValue)
         {
-            this.Property.SetValue(model, theValue);
-        }
-    }
-
-    public class SCTControl<TData> : SCTControlBase
-    {
-        private Expression<Func<TData, object>> _mapping;
-
-        public SCTControl()
-        {
-            this.DataType = typeof(TData);
+            if (!ControlValues.ContainsKey(key))
+                ControlValues.Add(key, theValue);
+            else
+                ControlValues[key] = theValue;
         }
 
-        public Expression<Func<TData, object>> Mapping
-        {
-            get
-            {
-                return _mapping;
-            }
-            set
-            {
-                this.Property = value.GetPropertyInfo();
-                _mapping = value;
-            }
-        }               
-    }
-
+        #region metainformation
+        public Dictionary<string, object> MetaInformation = new Dictionary<string, object>(StringComparer.CurrentCultureIgnoreCase);
+        #endregion
+    }    
 }

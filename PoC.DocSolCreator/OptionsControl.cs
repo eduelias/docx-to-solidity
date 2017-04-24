@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using DocSolTemplateer.Infrastructure.Interfaces;
-
+using System.Collections.Generic;
 
 namespace PoC.DocSolCreator
 {
@@ -10,7 +10,7 @@ namespace PoC.DocSolCreator
         public Microsoft.Office.Tools.Word.Document ActiveDocument;        
 
         public Action<ISCExpression> InsertControls;
-        public Action MakeContract;
+        public Action<IEnumerable<ISCExpression>> MakeContract;
 
         public OptionsControl()
         {
@@ -21,9 +21,9 @@ namespace PoC.DocSolCreator
         {
             int selectedIndex = ComboboxTemplates.SelectedIndex;
             ISContractTemplate selectedItem = ComboboxTemplates.SelectedItem as ISContractTemplate;
-            var templates = selectedItem.GetExpressionList();
+            var expressions = selectedItem.GetExpressionList();
 
-            foreach (var xp in templates)
+            foreach (var xp in expressions)
             {
                 var bt = new Button()
                 {
@@ -40,8 +40,8 @@ namespace PoC.DocSolCreator
             };
 
             bt2.Click += (s, ev) =>
-            {
-                MakeContract();
+            {                
+                MakeContract(expressions);
             };
 
             UpperPanel.Controls.Add(bt2);

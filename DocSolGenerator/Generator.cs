@@ -1,4 +1,5 @@
-﻿using PoC.DocSolTemplateer.Templates;
+﻿using DocSolTemplateer.Infrastructure.Interfaces;
+using PoC.DocSolTemplateer.Templates;
 using System.Collections.Generic;
 
 namespace DocSolGenerator

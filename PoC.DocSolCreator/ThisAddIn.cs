@@ -1,10 +1,12 @@
-﻿using DocSolTemplateer.Infrastructure.Enums;
+﻿using DocSolTemplateer.Infrastructure.BaseTypes;
+using DocSolTemplateer.Infrastructure.Enums;
 using DocSolTemplateer.Infrastructure.Interfaces;
 using Microsoft.Office.Interop.Word;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace PoC.DocSolCreator
 {
@@ -66,9 +68,10 @@ namespace PoC.DocSolCreator
                     case SCTControlKindEnum.Integer:
                     case SCTControlKindEnum.String:
                         {
-                            var tctrl = ActiveDocument.Controls.AddRichTextContentControl(ctrl.InternalName + "_" + Guid.NewGuid().ToString());
+                            var tctrl = ActiveDocument.Controls.AddRichTextContentControl(ctrl.InternalName);
                             tctrl.SetPlaceholderText(null, null, ctrl.DisplayText);
                             tctrl.LockContentControl = true;
+                            ctrl.AddObjectId(tctrl.ID);                                                    
                         }
                         break;
                     default:
@@ -77,20 +80,23 @@ namespace PoC.DocSolCreator
             }
         }
 
-        private void GenerateContract()
+        private void GenerateContract(IEnumerable<ISCExpression> expressions)
         {
-            //foreach(var template in myOptionsControl
-            //    .ComboboxTemplates
-            //    .Items
-            //    .Cast<ISContractTemplate>()
-            //    .Where(ct => ct.ShouldCheck))
-            //{
-
-            //}
-
-            foreach (var control in ActiveDocument.Controls)
-            {
-                var al = control;
+            
+            object instance = null;
+            foreach (var expression in expressions)
+            {                
+                foreach (var sccontrol in expression.TemplateControls)
+                {
+                    instance = (instance == null) ? Activator.CreateInstance(sccontrol.DataType) : instance;
+                    foreach (var control in sccontrol.GetObjectIds()) {                        
+                        foreach (var wordComp in ActiveDocument.Controls.Cast<Microsoft.Office.Tools.Word.ContentControlBase>().Where(i => i.ID == control))
+                        {
+                            sccontrol.SetValue(instance, wordComp.GetType().GetProperties().Where(p => p.Name == "Text").First().GetValue(wordComp));
+                        }
+                    }
+                }
+                instance = null;
             }
         }
 

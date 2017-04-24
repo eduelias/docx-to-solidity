@@ -12,6 +12,6 @@ namespace DocSolTemplateer.Infrastructure.Interfaces
 
         //string GetValorFunctionBody();
 
-        IEnumerable<ISCExpression> GetExpressionList();
+        IEnumerable<ISCExpression> GetExpressionList();                
     }
 }

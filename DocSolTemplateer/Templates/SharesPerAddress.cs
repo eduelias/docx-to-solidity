@@ -10,11 +10,16 @@ namespace PoC.DocSolTemplateer.Templates
     public class SharesPerAddressData
     {
         public string Address { get; set; }
-        public int Share { get; set; }
+        public string Share { get; set; }
     }
 
-    public class SharePerAddressSCTeplate : ISContractTemplate
+    public class SCTemplateBase
     {
+        public static IEnumerable<ISCExpression> UsedExpressions = new List<ISCExpression>();
+    }
+
+    public class SharePerAddressSCTeplate : SCTemplateBase, ISContractTemplate
+    {        
         public Type DataType = typeof(SharesPerAddressData);
 
         public string Name
@@ -31,7 +36,7 @@ namespace PoC.DocSolTemplateer.Templates
             {
                 return GetExpressionList().Any(e => e.ShouldCheck);
             }
-        }   
+        }        
 
         public string GetContractGlobalFields<T>(T Data)
         {
@@ -67,34 +72,50 @@ namespace PoC.DocSolTemplateer.Templates
 
         public IEnumerable<ISCExpression> GetExpressionList()
         {
-            return new List<ISCExpression>()
+            var list = new List<ISCExpression>();
+            var guid = Guid.NewGuid();
+            var expr = new SCExpressionBase()
             {
-                new SCExpressionBase {
-                    Name = "Address/share",
-                    TemplateControls = new List<SCTControl<SharesPerAddressData>>()
+                Name = "Address/share"
+            };
+
+            expr.TemplateControls = new List<SCTControl<SharesPerAddressData>>()
                     {
-                        new SCTControl<SharesPerAddressData>() {
+                        new SCTControl<SharesPerAddressData>() {                            
                             Order = 1,
                             Kind = SCTControlKindEnum.String,
                             DisplayText = "Wallet addres (0x0000)",
-                            InternalName = "SharesPerAddress_address",
-                            Mapping = x => x.Address                       
+                            InternalName = string.Format("SharesPerAddress_address_{0}", guid),
+                            Mapping = x => x.Address
                         },
-                        new SCTControl<SharesPerAddressData>() {
+                        new SCTControl<SharesPerAddressData>() {                            
                             Order = 2,
                             Kind = SCTControlKindEnum.Integer,
                             DisplayText = "Share percent",
-                            InternalName = "SharesPerAddress_shares",
+                            InternalName = string.Format("SharesPerAddress_shares_{0}", guid),
                             Mapping = x => x.Share
                         }
-                    }
-                }
-            };
+                    };
+            list.Add(expr);
+
+            this.AddUsedExpressionRange(list);
+
+            return list;
         }
 
         public string GetValorFunctionBody()
         {
             return string.Empty;
+        }
+
+        public IEnumerable<ISCExpression> GetUsedExpressions()
+        {
+            return UsedExpressions;
+        }
+
+        public void AddUsedExpressionRange(IEnumerable<ISCExpression> expressions)
+        {
+            (UsedExpressions as List<ISCExpression>).AddRange(expressions);
         }
     }
 }

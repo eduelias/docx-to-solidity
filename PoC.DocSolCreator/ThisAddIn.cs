@@ -19,6 +19,9 @@ namespace PoC.DocSolCreator
         private Microsoft.Office.Tools.Word.Document ActiveDocument;
         private IEnumerable<Type> LoadedTemplates;
 
+
+        private Dictionary<string, Tuple<string, object>> DataStorage = new Dictionary<string, Tuple<string, object>>();
+
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
             ActiveDocument =
@@ -59,13 +62,15 @@ namespace PoC.DocSolCreator
         private void InsertControls(ISCExpression expression)
         {
             Selection currentSelection = Application.Selection;
-            var currentRange = currentSelection.Range;
+            var currentRange = currentSelection.Range;                        
 
-            expression.SetAsUsed();
+            expression = expression.ContainerTemplate.GetDefaultExpression().First();
 
-            expression.GroupIdentification = Guid.NewGuid();  
+            expression.GroupIdentification = Guid.NewGuid();
 
-            foreach (var ctrl in expression.TemplateControls.OrderByDescending(o => o.Order))
+            (expression.ContainerTemplate.UsedExpressions as List<ISCExpression>).Add(expression);
+
+            foreach (var ctrl in expression.Controls.OrderByDescending(o => o.Order))
             {                
                 switch (ctrl.Kind) {
                     case SCTControlKindEnum.Integer:
@@ -77,7 +82,9 @@ namespace PoC.DocSolCreator
                                 ActiveDocument.Paragraphs[ActiveDocument.Paragraphs.Count].Range,
                                 ctrl.InternalName + "_" + expression.GroupIdentification);
                             textControl2.PlaceholderText = ctrl.DisplayText;
+
                             ctrl.AddObjectId(expression.GroupIdentification.ToString(), textControl2.ID);
+                            ctrl.Grouping = expression.GroupIdentification;                            
 
                             ActiveDocument.Paragraphs[ActiveDocument.Paragraphs.Count].Range.InsertParagraphAfter();
                         }
@@ -90,21 +97,18 @@ namespace PoC.DocSolCreator
 
         private void GenerateContract(IEnumerable<ISContractTemplate> templates)
         {
-            myOptionsControl.ContractEditBox.Text = string.Empty;
+            myOptionsControl.ContractEditBox.Text = string.Empty;                        
             foreach (var template in templates)
             {
                 foreach (var expression in template.UsedExpressions)
-                {
-                    foreach (var sccontrol in expression.TemplateControls)
+                {   
+                    List<object> values = new List<object>();
+                    foreach (var control in expression.GetControlIds())
                     {
-                        foreach (var control in sccontrol.GetObjectIds())
-                        {
-                            foreach (var wordComp in ActiveDocument.Controls.Cast<Microsoft.Office.Tools.Word.ContentControlBase>().Where(i => i.ID == control))
-                            {
-                                sccontrol.SetValue(expression.GroupIdentification.ToString(), wordComp.GetType().GetProperties().Where(p => p.Name == "Text").First().GetValue(wordComp));
-                            }
-                        }
+                        var wordcomp = ActiveDocument.Controls.Cast<Microsoft.Office.Tools.Word.ContentControlBase>().Where(i => i.ID == control).First();
+                        values.Add(wordcomp.GetType().GetProperties().Where(p => p.Name == "Text").First().GetValue(wordcomp));                        
                     }
+                    expression.ControlValues.AddRange(values);                 
                 }
             }
 

@@ -1,5 +1,4 @@
 ﻿using DocSolTemplateer.Infrastructure.Interfaces;
-using PoC.DocSolTemplateer.Templates;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,19 +18,26 @@ namespace DocSolGenerator
             contractBody.Add(string.Format(DEC_CONTRACT_NAME, contractName));
             contractBody.Add("{");
 
-            
+            contractBody.Add(" ");
+
             foreach (var template in templates)
             {
-                contractBody.Add(string.Format("{0}{1}", TAB, template.GetContractGlobalFields()));
+                foreach (var lines in template.GetContractGlobalFields())
+                {
+                    contractBody.Add(string.Format("{0}{1}", TAB, lines));
+                }
             }
-            
 
-            contractBody.Add(TAB + contractName + "() {");
+            contractBody.Add(" ");
+
+            contractBody.Add(TAB + "function " + contractName + "() {");
             foreach (var ctorData in templates.SelectMany(x => x.GetConstructorData()))
             {
                 contractBody.Add(string.Format("{0}{0}{1}", TAB, ctorData));
             }
             contractBody.Add(TAB + "}");
+
+            contractBody.Add(" ");
 
             contractBody.Add(string.Format("{0}function() payable ", TAB));
             contractBody.Add(TAB + "{");
@@ -42,6 +48,7 @@ namespace DocSolGenerator
             }
             contractBody.Add(TAB + "}");
 
+            contractBody.Add(" ");
 
             contractBody.Add("}");
             return string.Join("\r\n", contractBody);

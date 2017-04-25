@@ -8,7 +8,7 @@ namespace DocSolTemplateer.Infrastructure.BaseTypes
     public class SCTControlBase
     { 
         private Dictionary<string, string> ControlIds = new Dictionary<string, string>();
-        public Dictionary<string, object> ControlValues =  new Dictionary<string, object>();
+        public List<object> ControlValues =  new List<object>();
         
         public int Order { get; set; }        
         public string DisplayText { get; set; }
@@ -16,11 +16,11 @@ namespace DocSolTemplateer.Infrastructure.BaseTypes
 
         public SCTControlKindEnum Kind { get; set; }
         public int Width { get; set; }
-        public Guid Grouping { get; internal set; }
+        public Guid Grouping { get; set; }
 
-        public IEnumerable<string> GetObjectIds()
+        public IEnumerable<string> GetObjectIds(string id)
         {
-            return ControlIds.Select(x => x.Value);
+            return ControlIds.Where(x => x.Key == id).Select(x => x.Value);
         }
 
         public void AddObjectId(string guid, string Id)
@@ -28,12 +28,9 @@ namespace DocSolTemplateer.Infrastructure.BaseTypes
             ControlIds.Add(guid, Id);
         }
 
-        public void SetValue(string key, object theValue)
+        public void SetValue(object theValue)
         {
-            if (!ControlValues.ContainsKey(key))
-                ControlValues.Add(key, theValue);
-            else
-                ControlValues[key] = theValue;
+            ControlValues.Add(theValue);
         }
 
         #region metainformation

@@ -10,8 +10,12 @@ namespace DocSolTemplateer.Infrastructure.Interfaces
 
         string Name { get; set; }
         
-        IEnumerable<SCTControlBase> TemplateControls { get; set; }
+        IEnumerable<SCTControlBase> Controls { get; set; }        
 
-        IEnumerable<string> GetAtrributionExpression();
+        ISContractTemplate ContainerTemplate { get; set; }
+
+        IEnumerable<string> GetControlIds();
+
+        List<object> ControlValues { get; set; }
     }
 }

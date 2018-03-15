@@ -28,16 +28,22 @@ namespace PoC.DocSolCreator
             {
                 var bt = new Button()
                 {
-                    Text = xp.Name                    
+                    Text = xp.Name,
+                    Width = 200,
+                    Height = 96
                 };
 
                 bt.Click += (s, ev) => InsertControls(xp);
                 UpperPanel.Controls.Add(bt);
             }
 
+            UpperPanel.Controls.Add(new Splitter());
+
             var bt2 = new Button()
             {
-                Text = "Refresh it"
+                Text = "Refresh it",
+                Width = 200,
+                Height = 96
             };
 
             bt2.Click += (s, ev) =>

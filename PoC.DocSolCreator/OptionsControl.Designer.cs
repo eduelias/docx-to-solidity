@@ -43,6 +43,7 @@
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -55,8 +56,9 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.ContractEditBox);
             this.splitContainer1.Panel2MinSize = 75;
-            this.splitContainer1.Size = new System.Drawing.Size(800, 800);
-            this.splitContainer1.SplitterDistance = 100;
+            this.splitContainer1.Size = new System.Drawing.Size(2133, 1908);
+            this.splitContainer1.SplitterDistance = 180;
+            this.splitContainer1.SplitterWidth = 10;
             this.splitContainer1.TabIndex = 0;
             // 
             // UpperPanel
@@ -65,9 +67,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.UpperPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.UpperPanel.Location = new System.Drawing.Point(3, 30);
+            this.UpperPanel.Location = new System.Drawing.Point(8, 72);
+            this.UpperPanel.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
             this.UpperPanel.Name = "UpperPanel";
-            this.UpperPanel.Size = new System.Drawing.Size(794, 71);
+            this.UpperPanel.Size = new System.Drawing.Size(2117, 100);
             this.UpperPanel.TabIndex = 3;
             // 
             // ComboboxTemplates
@@ -78,9 +81,10 @@
             this.ComboboxTemplates.FormattingEnabled = true;
             this.ComboboxTemplates.Items.AddRange(new object[] {
             "Shares"});
-            this.ComboboxTemplates.Location = new System.Drawing.Point(3, 3);
+            this.ComboboxTemplates.Location = new System.Drawing.Point(8, 7);
+            this.ComboboxTemplates.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
             this.ComboboxTemplates.Name = "ComboboxTemplates";
-            this.ComboboxTemplates.Size = new System.Drawing.Size(794, 21);
+            this.ComboboxTemplates.Size = new System.Drawing.Size(2111, 39);
             this.ComboboxTemplates.TabIndex = 2;
             this.ComboboxTemplates.SelectedIndexChanged += new System.EventHandler(this.ComboboxTemplates_SelectedIndexChanged);
             // 
@@ -90,20 +94,22 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ContractEditBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.ContractEditBox.Location = new System.Drawing.Point(3, 3);
+            this.ContractEditBox.Location = new System.Drawing.Point(8, 7);
+            this.ContractEditBox.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
             this.ContractEditBox.Name = "ContractEditBox";
-            this.ContractEditBox.Size = new System.Drawing.Size(794, 690);
+            this.ContractEditBox.Size = new System.Drawing.Size(2117, 1697);
             this.ContractEditBox.TabIndex = 0;
             this.ContractEditBox.Text = "";
             // 
             // OptionsControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(16F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer1);
-            this.MinimumSize = new System.Drawing.Size(800, 0);
+            this.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
+            this.MinimumSize = new System.Drawing.Size(2133, 0);
             this.Name = "OptionsControl";
-            this.Size = new System.Drawing.Size(800, 800);
+            this.Size = new System.Drawing.Size(2133, 1908);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();

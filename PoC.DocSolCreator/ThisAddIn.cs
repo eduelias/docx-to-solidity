@@ -1,12 +1,11 @@
 ﻿using DocSolGenerator;
-using DocSolTemplateer.Infrastructure.BaseTypes;
 using DocSolTemplateer.Infrastructure.Enums;
 using DocSolTemplateer.Infrastructure.Interfaces;
 using Microsoft.Office.Interop.Word;
+using Microsoft.Office.Tools.Word;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace PoC.DocSolCreator
@@ -46,6 +45,9 @@ namespace PoC.DocSolCreator
                 var Template = Activator.CreateInstance(template) as ISContractTemplate;
                 myOptionsControl.ComboboxTemplates.Items.Add(Template);
             }
+
+            myOptionsControl.ComboboxTemplates.SelectedIndex = 0;
+            myOptionsControl.ComboboxTemplates.Refresh();
         }
 
         private void SetupControl()
@@ -78,16 +80,25 @@ namespace PoC.DocSolCreator
                         {                                                    
                             ActiveDocument.Paragraphs[ActiveDocument.Paragraphs.Count].Range.InsertParagraphAfter();
 
-                            var textControl2 = ActiveDocument.Controls.AddPlainTextContentControl(
-                                ActiveDocument.Paragraphs[ActiveDocument.Paragraphs.Count].Range,
-                                ctrl.InternalName + "_" + expression.GroupIdentification);
+                            var id = ctrl.InternalName + "_" + expression.GroupIdentification;
+                            var range = ActiveDocument.Paragraphs[ActiveDocument.Paragraphs.Count].Range;
+
+                            PlainTextContentControl textControl2 = ActiveDocument.Controls.AddPlainTextContentControl(range,id);
                             textControl2.PlaceholderText = ctrl.DisplayText;
+                            textControl2.Deleting += (a, e) =>
+                            {
+                                (expression.ContainerTemplate.UsedExpressions as List<ISCExpression>)?.Remove(
+                                    expression);
+                            };
 
                             ctrl.AddObjectId(expression.GroupIdentification.ToString(), textControl2.ID);
                             ctrl.Grouping = expression.GroupIdentification;                            
-
+                            
+                            
                             ActiveDocument.Paragraphs[ActiveDocument.Paragraphs.Count].Range.InsertParagraphAfter();
                         }
+                        break;
+                    case SCTControlKindEnum.Date:
                         break;
                     default:
                         return;                        

@@ -18,7 +18,7 @@ namespace DocSolTemplateer.Infrastructure.BaseTypes
         public string Name { get; set; }        
         public IEnumerable<SCTControlBase> Controls { get; set; }
 
-        public List<object> ControlValues { get; set; }
+        public List<object> ControlValues { get; set; }        
 
         public IEnumerable<string> GetControlIds()
         {

@@ -33,7 +33,7 @@ namespace PoC.DocSolTemplateer.Templates
         public override string ToString()
         {
             return this.Name;
-        }        
+        }           
 
         /// <summary>
         /// Gets the default components setup, to insert on document
@@ -42,31 +42,32 @@ namespace PoC.DocSolTemplateer.Templates
         public IEnumerable<ISCExpression> GetDefaultExpression()
         {
             var list = new List<ISCExpression>();
-            var expr = new SCExpressionBase()
+            var expr = new SCExpressionBase
             {
                 Name = "Address/share",
-                ContainerTemplate = this
-            };
-
-            expr.Controls = new List<SCTControlBase>()
+                ContainerTemplate = this,
+                Controls = new List<SCTControlBase>()
                 {
-                    new SCTControlBase() {                            
+                    new SCTControlBase()
+                    {
                         Order = 1,
                         Kind = SCTControlKindEnum.String,
                         DisplayText = "Wallet addres (0x0000)",
                         InternalName = SharePerAddressSCTeplate.AddressFieldInternalName
                     },
-                    new SCTControlBase() {                            
+                    new SCTControlBase()
+                    {
                         Order = 2,
                         Kind = SCTControlKindEnum.Integer,
                         DisplayText = "Share percent",
                         InternalName = SharePerAddressSCTeplate.SharesFieldInternalName
                     }
-                };
+                }
+            };
 
-            list.Add(expr);                
+            list.Add(expr);
 
-            return list;         
+            return list;
         }
 
         /// <summary>
@@ -85,6 +86,26 @@ namespace PoC.DocSolTemplateer.Templates
                 throw new ArgumentOutOfRangeException();
 
             CurrentValues = values;
+        }
+
+        public List<string> Validate()
+        {
+            var list = new List<string>();
+
+            //var sum = UsedExpressions.SelectMany(x => x.ControlValues.Where(w => w.Key == SharesFieldInternalName).Select(q => q.Value))
+            //    .Cast<int>()
+            //    .Sum(x => x);
+
+            foreach (var ue in UsedExpressions)
+            {
+                var address = ue.ControlValues.First();
+                var shares = ue.ControlValues.Last();
+
+                list.Add(string.Format("shares[{0}] = {1}; ", address, shares));
+                list.Add(string.Format("addresses.push({0}); ", address));
+            }
+
+            return list;
         }
 
         public IEnumerable<string> GetConstructorData()
@@ -123,7 +144,7 @@ namespace PoC.DocSolTemplateer.Templates
             var lst = new List<string>();
 
             lst.Add("mapping (address => uint) private shares;");
-            lst.Add("address[] addresses;");
+            lst.Add($"address[{UsedExpressions.Count()}] addresses;");
 
             return lst;
         }
